@@ -1,12 +1,9 @@
-import socket, platform, psutil
+from server import Server
+from parsers.machine_parser import MachineParser
 
-class Machine:
+class Machine(Server):
     def __init__(self):
-        self.info = {}
+        super().__init__()
+        self.parser = MachineParser()
 
-    def get_info(self):
-        return self.info
-
-    def set_info(self):
-        pass
 
