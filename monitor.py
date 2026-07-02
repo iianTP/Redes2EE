@@ -5,3 +5,6 @@ class Monitor(Server):
     def __init__(self):
         super().__init__()
         self.parser = MonitorParser()
+
+m = Monitor()
+m.start()

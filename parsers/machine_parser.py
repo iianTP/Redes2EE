@@ -1,4 +1,4 @@
-from parser import Parser
+from parsers.parser import Parser
 from controllers.machine_controller import MachineController
 
 class MachineParser(Parser):
@@ -7,19 +7,10 @@ class MachineParser(Parser):
         self.mc = MachineController()
         self.commands = {
 
-            'M_INFO': {
-                'func': lambda _: self.mc.get_info(),
-                'desc': 'LISTA COMANDOS DISPONÍVEIS'
-            },
+            'M_INFO': lambda req: self.mc.get_info(req),
 
-            'M_STATUS': {
-                'func': lambda _: self.mc.get_status(),
-                'desc': 'LISTA COMANDOS DISPONÍVEIS'
-            },
+            'M_STATUS': lambda req: self.mc.get_status(req),
 
-            'M_PROCS': {
-                'func': lambda _: self.mc.get_procs(),
-                'desc': 'LISTA COMANDOS DISPONÍVEIS'
-            },
+            'M_PROCS': lambda req: self.mc.get_procs(req)
 
         }

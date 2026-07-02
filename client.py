@@ -1,3 +1,37 @@
+import socket
 
 class Client:
-    pass
+    def __init__(self):
+        self.s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        self.host_port = ( '127.0.0.1', 2222 )
+        self.exit = False
+
+    def start(self):
+
+        print('Conectando ao servidor...')
+
+        while True:
+            try:
+                self.s.connect(self.host_port)
+                break
+            except ConnectionRefusedError:
+                continue
+
+        print('Conexão estabelecida.\n')
+
+        while not self.exit:
+            
+            print('>>>',end='')
+            command = input()
+            if command == 'EXIT':
+                self.exit = True
+                continue
+
+            self.s.sendall(command.encode('utf-8'))
+
+            response = self.s.recv(2048).decode('utf-8')
+            print(response)
+
+
+c = Client()
+c.start()

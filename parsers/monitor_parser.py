@@ -1,4 +1,4 @@
-from parser import Parser
+from parsers.parser import Parser
 from controllers.monitor_controller import MonitorController
 
 class MonitorParser(Parser):
@@ -8,38 +8,44 @@ class MonitorParser(Parser):
         self.commands = {
 
             'HELP': {
-                'func': lambda _: self.help(),
-                'desc': 'LISTA COMANDOS DISPONÍVEIS'
+                'func': lambda req: self.help(req),
+                'desc': '-> Lista comandos disponíveis'
             },
 
             'LINK': {
                 'func': lambda req: self.mc.link_machines(req),
-                'desc': 'CONECTA 1 OU MAIS MÁQUINAS AO SERVIDOR DE MONITORAMENTO'
+                'desc': ':(ip_1);(ip_2);(ip_3);... -> Conecta 1 ou mais máquinas ao servidor de monitoramento'
             },
 
             'LIST': {
-                'func': lambda _: self.mc.list_machines(),
-                'desc': 'LISTA OS IDS DAS MÁQUINAS CONECTADAS'
+                'func': lambda req: self.mc.list_machines(req),
+                'desc': ' -> Lista os IDs das máquinas conectadas'
             },
 
             'INFO': {
                 'func': lambda req: self.mc.machine_info(req),
-                'desc': 'FORNECE ATRIBUTOS PRINCIPAIS DE UMA MÁQUINA (parâmetros: ID da máquina)'
+                'desc': ':(id) -> Fornece atributos principais de uma máquina (parâmetros: ID da máquina)'
             },
 
             'STATUS': {
                 'func': lambda req: self.mc.machine_status(req),
-                'desc': 'FORNECE O ESTADO DO HARDWARE DE UMA MÁQUINA (parâmetros: ID da máquina)'
+                'desc': ':(id) -> Fornece o estado do hardware de uma máquina'
             },
 
             'PROCS': {
                 'func': lambda req: self.mc.machine_procs(req),
-                'desc': 'FORNECE LISTA DE PROCESSOS EM EXECUÇÃO NUMA MÁQUINA (parâmetros: ID da máquina)'
+                'desc': ':(id) -> Fornece lista de processos em execução numa máquina'
             },
 
             'LOG': {
-                'func': lambda _: 1,
-                'desc': 'FORNECE RELATÓRIO DO ESTADO DE UMA MÁQUINA'
+                'func': lambda req: 1,
+                'desc': ':(id) -> Fornece relatório do estado de uma máquina'
             },
 
         }
+
+    def help(self,req):
+        for com, info in self.commands.items():
+            print(com,info['desc'],'\n')
+        
+        req['send']('asdasdasdasdasdasdasdasdasd')

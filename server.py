@@ -27,21 +27,28 @@ class Server:
 
         while not self.exit:
 
+            print("Aguardando nova conexão...")
             conn, addr = self.s.accept()
+            print(f"Conexão aceita de: {addr}")
 
             print('newstock',conn)
             print('add',addr)
 
-            request = conn.recv(4096).decode('utf-8')
+            while True:
 
-            func, params = self.parser.get_command(request)
+                print('fjiksdfnsdf')
+                request = conn.recv(4096).decode('utf-8')
 
-            req = { 'params': params, 'send': self.send }
+                func, params = self.parser.get_command(request)
 
-            func(req)
+                req = { 'params': params, 'send': lambda res: self.send(conn, res) }
+
+                func(req)
+
+            conn.close()
 
 
-    def send(self,res):
-        pass
+    def send(self,conn:socket.socket,res:str):
+        conn.sendall(res.encode('utf-8'))
 
 
