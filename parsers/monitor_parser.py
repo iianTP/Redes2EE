@@ -9,7 +9,7 @@ class MonitorParser(Parser):
 
             'HELP': {
                 'func': lambda req: self.help(req),
-                'desc': '-> Lista comandos disponíveis'
+                'desc': ' -> Lista comandos disponíveis'
             },
 
             'LINK': {
@@ -23,17 +23,17 @@ class MonitorParser(Parser):
             },
 
             'INFO': {
-                'func': lambda req: self.mc.machine_info(req),
+                'func': lambda req: self.mc.machine_op(req,'M_INFO'),
                 'desc': ':(id) -> Fornece atributos principais de uma máquina (parâmetros: ID da máquina)'
             },
 
             'STATUS': {
-                'func': lambda req: self.mc.machine_status(req),
+                'func': lambda req: self.mc.machine_op(req,'M_STATUS'),
                 'desc': ':(id) -> Fornece o estado do hardware de uma máquina'
             },
 
             'PROCS': {
-                'func': lambda req: self.mc.machine_procs(req),
+                'func': lambda req: self.mc.machine_op(req,'M_PROCS'),
                 'desc': ':(id) -> Fornece lista de processos em execução numa máquina'
             },
 
@@ -45,7 +45,7 @@ class MonitorParser(Parser):
         }
 
     def help(self,req):
+        res = ''
         for com, info in self.commands.items():
-            print(com,info['desc'],'\n')
-        
-        req['send']('asdasdasdasdasdasdasdasdasd')
+            res += f'{com}{info['desc']}\n\n'
+        req['send'](f'RES:OK|DATA:{res}')

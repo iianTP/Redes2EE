@@ -29,8 +29,22 @@ class Client:
 
             self.s.sendall(command.encode('utf-8'))
 
-            response = self.s.recv(2048).decode('utf-8')
-            print(response)
+            self.receive()
+
+    def receive(self):
+        response = self.s.recv(2048).decode('utf-8')
+        res_dict = {}
+
+        for field in response.split('|'):
+            split_field = field.split(':',1)
+            label = split_field[0]
+            data = split_field[1]
+            res_dict[label] = data
+
+        if res_dict['RES'] == 'ERROR':
+            print(res_dict['MSG'])
+        elif res_dict['RES'] == 'OK':
+            print(res_dict['DATA'])
 
 
 c = Client()

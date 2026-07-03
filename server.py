@@ -36,7 +36,6 @@ class Server:
 
             while True:
 
-                print('fjiksdfnsdf')
                 request = conn.recv(4096).decode('utf-8')
 
                 func, params = self.parser.get_command(request)
