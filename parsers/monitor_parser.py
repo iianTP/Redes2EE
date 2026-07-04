@@ -34,7 +34,7 @@ class MonitorParser(Parser):
 
             'PROCS': {
                 'func': lambda req: self.mc.machine_op(req,'M_PROCS'),
-                'desc': ':(id) -> Fornece lista de processos em execução numa máquina'
+                'desc': ':(id);(limite) -> Fornece lista de processos em execução numa máquina'
             },
 
             'LOG': {

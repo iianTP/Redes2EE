@@ -1,12 +1,53 @@
-import platform, psutil
+import platform, psutil, cpuinfo
 
 class MachineController:
+    def __init__(self):
+        self.info = {
+            'SO':           platform.system(),
+            'E-SO':         platform.release(),
+            'V-SO':         platform.version(),
+            'ARQ':          platform.architecture(),
+            'CPU':          cpuinfo.get_cpu_info()['brand_raw'],
+            'FIS-CORES':    psutil.cpu_count(logical=False),
+            'LOG-CORES':    psutil.cpu_count(logical=True),
+            'RAM':          psutil.virtual_memory().total/(1024**3),
+            'DISC':         psutil.disk_usage('/').total/(1024**3)
+        }
     
     def get_info(self,req):
-        pass
+        res = ''
+        for label,data in self.info.items():
+            if label in ['RAM','DISC']:
+                res += f'{label}_{data:.2f};'
+            else:
+                res += f'{label}_{data}'
+        req['send'](f'RES:OK|DATA:{res}')
 
     def get_status(self,req):
-        pass
+        mem_usage = psutil.virtual_memory().percent
+        disk_usage = psutil.disk_usage('/').percent
+        cpu_usage = psutil.cpu_percent()
 
-    def get_procs(self,req):
-        pass
+        res = f'RAM_{mem_usage};DISC_{disk_usage};CPU_{cpu_usage}'
+
+        req['send'](f'RES:OK|DATA:{res}')
+
+    def get_procs(self,req,sort_method='memory'):
+
+        procs = []
+
+        try:
+            limit = req['params'][1]
+        except Exception:
+            req['send']('RES:ERROR|MSG:Um erro ocorreu.')
+            return
+
+        for p in psutil.process_iter():
+            proc = p.as_dict(attrs=['pid','name','memory_percent','cpu_percent'])
+            if all([not proc[k] == None for k in ['pid','name','memory_percent','cpu_percent']]):
+                procs += proc
+
+        sorted_procs = sorted(procs, key=lambda p: p[f'{sort_method}_percent'], reverse=True)
+
+        req['send'](f'RES:OK|DATA:{sorted_procs[:limit]}')
+        

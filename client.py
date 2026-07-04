@@ -1,9 +1,9 @@
 import socket
 
 class Client:
-    def __init__(self):
+    def __init__(self,ip):
         self.s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        self.host_port = ( '127.0.0.1', 2222 )
+        self.host_port = ( ip, 2222 )
         self.exit = False
 
     def start(self):
@@ -47,5 +47,6 @@ class Client:
             print(res_dict['DATA'])
 
 
-c = Client()
+print('ip do servidor de monitoramento: ',end='')
+c = Client(input())
 c.start()
