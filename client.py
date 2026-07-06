@@ -21,8 +21,11 @@ class Client:
 
         while not self.exit:
             
-            print('>>>',end='')
-            command = input()
+            command = ''
+            while command == '' : 
+                print('>>>',end='')
+                command = input()
+
             if command == 'EXIT':
                 self.exit = True
                 continue

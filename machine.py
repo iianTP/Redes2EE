@@ -7,3 +7,5 @@ class Machine(Server):
         self.parser = MachineParser()
 
 
+m = Machine()
+m.start(port=2223)

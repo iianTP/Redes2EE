@@ -17,12 +17,12 @@ class Server:
         self.parser = Parser()
         self.exit = False
 
-    def start(self):
+    def start(self,port=2222):
 
         print(self.s)
         print(hex(id(self.s)))
 
-        self.s.bind(('', 2222))
+        self.s.bind(('', port))
         self.s.listen(5)
 
         while not self.exit:
@@ -36,15 +36,16 @@ class Server:
 
             while True:
 
-                request = conn.recv(4096).decode('utf-8')
-
-                func, params = self.parser.get_command(request)
-
-                req = { 'params': params, 'send': lambda res: self.send(conn, res) }
-
-                func(req)
-
-            conn.close()
+                try:
+                    request = conn.recv(4096).decode('utf-8')
+                    print(request)
+                    if not request: break
+                    func, params = self.parser.get_command(request)
+                    req = { 'params': params, 'send': lambda res: self.send(conn, res) }
+                    func(req)
+                except (ConnectionAbortedError,ConnectionResetError):
+                    print(f"Conexão com {addr} foi encerrada.")
+                    break
 
 
     def send(self,conn:socket.socket,res:str):

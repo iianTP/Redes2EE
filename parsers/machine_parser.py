@@ -7,10 +7,10 @@ class MachineParser(Parser):
         self.mc = MachineController()
         self.commands = {
 
-            'M_INFO': lambda req: self.mc.get_info(req),
+            'M_INFO': { 'func': lambda req: self.mc.get_info(req) },
 
-            'M_STATUS': lambda req: self.mc.get_status(req),
+            'M_STATUS': { 'func':  lambda req: self.mc.get_status(req) },
 
-            'M_PROCS': lambda req: self.mc.get_procs(req)
+            'M_PROCS': { 'func':  lambda req: self.mc.get_procs(req) }
 
         }
