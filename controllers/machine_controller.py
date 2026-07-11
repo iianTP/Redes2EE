@@ -15,13 +15,13 @@ class MachineController:
         }
     
     def get_info(self,req):
-        res = ''
+        res = []
         for label,data in self.info.items():
             if label in ['RAM','DISC']:
-                res += f'{label}_{data:.2f};'
+                res.append(f'{label}_{data:.2f}')
             else:
-                res += f'{label}_{data}'
-        req['send'](f'RES:OK|DATA:{res}')
+                res.append(f'{label}_{data}')
+        req['send'](f'RES:OK|DISPLAY:LIST|DATA:{';'.join(res)}')
 
     def get_status(self,req):
         mem_usage = psutil.virtual_memory().percent
@@ -30,7 +30,7 @@ class MachineController:
 
         res = f'RAM_{mem_usage};DISC_{disk_usage};CPU_{cpu_usage}'
 
-        req['send'](f'RES:OK|DATA:{res}')
+        req['send'](f'RES:OK|DISPLAY:USAGE|DATA:{res}')
 
     def get_procs(self,req,sort_method='memory'):
 
@@ -51,9 +51,17 @@ class MachineController:
 
         proc_str_list = []
         for p in sorted_procs:
-            proc_str_list.append('_'.join(p.values()))
+
+            attr_list = [
+                f'{p['pid']}',
+                p['name'],
+                f'{p['memory_percent']:.2f}',
+                f'{p['cpu_percent']:.2f}'
+            ]
+
+            proc_str_list.append('_'.join(attr_list))
 
         res = 'ID_NOME_RAM(%)_CPU(%);' + ';'.join(proc_str_list)
 
-        req['send'](f'RES:OK|DATA:{res}')
+        req['send'](f'RES:OK|DISPLAY:TABLE|DATA:{res}')
         

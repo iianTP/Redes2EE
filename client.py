@@ -47,10 +47,14 @@ class Client:
             data = split_field[1]
             res_dict[label] = data
 
+        print()
+
         if res_dict['RES'] == 'ERROR':
             print(res_dict['MSG'])
+        elif res_dict['DISPLAY'] == 'NONE':
+            print(res_dict['DATA'])
         else:
-            display_func = self.dp.get_command(res_dict['DISPLAY'])
+            display_func,_ = self.dp.get_command(res_dict['DISPLAY'])
             display_func(res_dict['DATA'])
 
 print('ip do servidor de monitoramento: ',end='')

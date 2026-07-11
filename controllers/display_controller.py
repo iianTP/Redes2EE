@@ -2,13 +2,17 @@ from tabulate import tabulate
 
 class DisplayController:
 
+    def display_help(self,data:str):
+        split_data = [[s.replace('_',';')+'\n' for s in c.split('_',1)] for c in data.split(';')]
+        print(tabulate(split_data,tablefmt='fancy_outline'),'\n')
+
     def display_list(self,data:str):
-        split_data = [r.split('_') for r in data.split(';')]
-        print(tabulate(split_data))
+        split_data = [r.split('_',1) for r in data.split(';')]
+        print(tabulate(split_data,tablefmt='fancy_outline'),'\n')
 
     def display_table(self,data:str):
         split_data = [p.split('_') for p in data.split(';')]
-        print(tabulate(split_data,headers='firstrow',tablefmt='fancy_outline'))
+        print(tabulate(split_data,headers='firstrow',tablefmt='fancy_outline'),'\n')
 
     def display_usage(self,data:str):
 

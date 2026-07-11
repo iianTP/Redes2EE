@@ -14,7 +14,7 @@ class MonitorParser(Parser):
 
             'LINK': {
                 'func': lambda req: self.mc.link_machines(req),
-                'desc': ':(ip_1);(ip_2);(ip_3);... -> Conecta 1 ou mais máquinas ao servidor de monitoramento'
+                'desc': ':(ip-1)_(ip-2)_(ip-3)_... -> Conecta 1 ou mais máquinas ao servidor de monitoramento'
             },
 
             'LIST': {
@@ -34,7 +34,7 @@ class MonitorParser(Parser):
 
             'PROCS': {
                 'func': lambda req: self.mc.machine_op(req,'M_PROCS'),
-                'desc': ':(id);(limite) -> Fornece lista de processos em execução numa máquina'
+                'desc': ':(id)_(limite) -> Fornece lista de processos em execução numa máquina'
             },
 
             'LOG': {
@@ -45,7 +45,10 @@ class MonitorParser(Parser):
         }
 
     def help(self,req):
-        res = ''
+        res = []
+        count = 1 
         for com, info in self.commands.items():
-            res += f'{com}{info['desc']}\n\n'
-        req['send'](f'RES:OK|DATA:{res}')
+            res.append(f'{count}_{com}{info['desc']}\n')
+            count += 1
+
+        req['send'](f'RES:OK|DISPLAY:HELP|DATA:{';'.join(res)}')

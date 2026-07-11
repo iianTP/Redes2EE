@@ -11,22 +11,27 @@ class MonitorController:
 
     def link_machines(self,req):
 
-        ip_list:list[str] = req['params']
-
+        try:
+            ip_list:list[str] = req['params']
+        except Exception as e:
+            print(e)
+            req['send']('RES:ERROR|MSG:ERRO NA COLETA DE PARÂMETROS')
+            return
+        
         for ip in ip_list:
             if not ip in self.machines:
                 id = f'M{self.curr_id}'
                 self.curr_id += 1
                 self.machines[id] = ip
 
-        req['send']('RES:OK|DATA:SUCCESS')
+        req['send']('RES:OK|DISPLAY:NONE|DATA:SUCCESS')
 
     def list_machines(self,req):
         res = ''
         for id in self.machines.keys():
             res += id
         
-        req['send'](f'RES:OK|DATA:{res}')
+        req['send'](f'RES:OK|DISPLAY:LIST|DATA:{res}')
 
     def machine_op(self,req,com:str):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as conn:
@@ -53,5 +58,7 @@ class MonitorController:
             fields = res.split('|')
             res_dict = { label: data for f in fields for [label,data] in [f.split(':',1)]}
 
+
+
             if 'RES' in res_dict and res_dict['RES'] == 'OK':
-                req['send'](f'RES:OK|DATA:{res_dict['DATA']}')
+                req['send'](f'RES:OK|DISPLAY:{res_dict['DISPLAY']}|DATA:{res_dict['DATA']}')

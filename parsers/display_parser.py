@@ -11,8 +11,10 @@ class DisplayParser(Parser):
 
             'TABLE': { 'func': lambda data: self.dc.display_table(data) },
 
-            'USAGE': { 'func':  lambda data: self.dc.display_usage(data) },
+            'USAGE': { 'func': lambda data: self.dc.display_usage(data) },
 
-            'LIST': { 'func': lambda data: self.dc.display_list(data) }
+            'LIST': { 'func': lambda data: self.dc.display_list(data) },
+
+            'HELP': { 'func': lambda data: self.dc.display_help(data) }
 
         }
