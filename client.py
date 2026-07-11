@@ -1,10 +1,12 @@
 import socket
+from parsers.display_parser import DisplayParser
 
 class Client:
     def __init__(self,ip):
         self.s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
         self.host_port = ( ip, 2222 )
         self.exit = False
+        self.dp = DisplayParser()
 
     def start(self):
 
@@ -35,6 +37,7 @@ class Client:
             self.receive()
 
     def receive(self):
+
         response = self.s.recv(2048).decode('utf-8')
         res_dict = {}
 
@@ -46,9 +49,9 @@ class Client:
 
         if res_dict['RES'] == 'ERROR':
             print(res_dict['MSG'])
-        elif res_dict['RES'] == 'OK':
-            print(res_dict['DATA'])
-
+        else:
+            display_func = self.dp.get_command(res_dict['DISPLAY'])
+            display_func(res_dict['DATA'])
 
 print('ip do servidor de monitoramento: ',end='')
 c = Client(input())

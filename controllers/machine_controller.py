@@ -39,13 +39,21 @@ class MachineController:
         try:
             limit = int(req['params'][1])
         except Exception:
-            req['send']('RES:ERROR|MSG:Um erro ocorreu.')
+            req['send']('RES:ERROR|MSG:Um erro ocorreu na coleta de parâmetros.')
             return
+        
         for p in psutil.process_iter():
             proc = p.as_dict(attrs=['pid','name','memory_percent','cpu_percent'])
-            if all([not proc[k] == None for k in ['pid','name','memory_percent','cpu_percent']]):
+            if not None in proc.values():
                 procs.append(proc)
 
-        sorted_procs = sorted(procs, key=lambda p: p[f'{sort_method}_percent'], reverse=True)
-        req['send'](f'RES:OK|DATA:{sorted_procs[:limit]}')
+        sorted_procs:list[dict] = sorted(procs, key=lambda p: p[f'{sort_method}_percent'], reverse=True)[:limit]
+
+        proc_str_list = []
+        for p in sorted_procs:
+            proc_str_list.append('_'.join(p.values()))
+
+        res = 'ID_NOME_RAM(%)_CPU(%);' + ';'.join(proc_str_list)
+
+        req['send'](f'RES:OK|DATA:{res}')
         
