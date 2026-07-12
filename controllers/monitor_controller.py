@@ -1,13 +1,35 @@
-import socket
+import socket,time,threading,os
 
 class MonitorController:
     def __init__(self):
         self.machines = {}
         self.curr_id = 0
+        self.t = threading.Thread(target=self._logger_thread)
+        self.t.daemon = True
+        self.t.start()
 
     def _get_machine_ip(self,params,com):
         id = params[0]
         return self.machines[id]
+    
+    def _logger_thread(self):
+        while True:
+            for machine,ip in self.machines.items():
+                try:
+                    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as conn:
+                        conn.connect((ip,2223))
+                        conn.sendall('M_STATUS'.encode('utf-8'))
+                        res = conn.recv(2048).decode('utf-8').split('DATA:',1)[1].replace(';',' - ')
+
+                        filename = f"./logs/log-{machine}.txt"
+                        timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+                        with open(filename, "a") as f:
+                            f.write(f"[{timestamp}] {res}\n")
+
+                except Exception as e:
+                    pass
+
+            time.sleep(10)
 
     def link_machines(self,req):
 
@@ -24,7 +46,7 @@ class MonitorController:
                 self.curr_id += 1
                 self.machines[id] = ip
 
-        req['send']('RES:OK|DISPLAY:NONE|DATA:SUCCESS')
+        req['send']('RES:OK|DISPLAY:NONE|DATA:SUCESSO')
 
     def list_machines(self,req):
         res = ''
@@ -33,6 +55,41 @@ class MonitorController:
         
         req['send'](f'RES:OK|DISPLAY:LIST|DATA:{res}')
 
+    def rename_machine(self,req):
+        try:
+            old_id = req['params'][0]
+            new_id = req['params'][1]
+        except Exception as e:
+            print(e)
+            req['send']('RES:ERROR|MSG:ERRO NA COLETA DE PARÂMETROS')
+            return
+        
+        if old_id in self.machines and not new_id in self.machines:
+            self.machines[new_id] = self.machines.pop(old_id)
+            req['send']('RES:OK|DISPLAY:NONE|DATA:SUCESSO')
+            return
+        
+        req['send'](f'RES:ERROR|MSG:MÁQUINA INFORMADA ({old_id}) NÃO EXISTE OU NOVO ID ({new_id}) JÁ ESTÁ SENDO USADO')
+
+    def get_machine_log(self,req):
+        try:
+            id = req['params'][0]
+        except Exception as e:
+            print(e)
+            req['send']('RES:ERROR|MSG:ERRO NA COLETA DE PARÂMETROS')
+            return
+        
+        file = f'./logs/log-{id}.txt'
+
+        if os.path.exists(file):
+            with open(file,'r') as f:
+                log = f.read()
+            req['send'](f'RES:OK|DISPLAY:NONE|DATA:\n{log}')
+        else:
+            req['send']("RES:ERROR|MSG:Nenhum histórico encontrado para esta máquina.")
+        
+
+        
     def machine_op(self,req,com:str):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as conn:
 

@@ -22,6 +22,11 @@ class MonitorParser(Parser):
                 'desc': ' -> Lista os IDs das máquinas conectadas'
             },
 
+            'RENAME': {
+                'func': lambda req: self.mc.rename_machine(req),
+                'desc': ':(id-antigo)_(id-novo) -> Renomeia o ID da máquina informada'
+            },
+
             'INFO': {
                 'func': lambda req: self.mc.machine_op(req,'M_INFO'),
                 'desc': ':(id) -> Fornece atributos principais de uma máquina (parâmetros: ID da máquina)'
@@ -38,7 +43,7 @@ class MonitorParser(Parser):
             },
 
             'LOG': {
-                'func': lambda req: 1,
+                'func': lambda req: self.mc.get_machine_log(req),
                 'desc': ':(id) -> Fornece relatório do estado de uma máquina'
             },
 
