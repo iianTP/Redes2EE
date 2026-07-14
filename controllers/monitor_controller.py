@@ -119,3 +119,5 @@ class MonitorController:
 
             if 'RES' in res_dict and res_dict['RES'] == 'OK':
                 req['send'](f'RES:OK|DISPLAY:{res_dict['DISPLAY']}|DATA:{res_dict['DATA']}')
+            else:
+                req['send'](res)

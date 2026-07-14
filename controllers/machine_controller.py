@@ -32,20 +32,25 @@ class MachineController:
 
         req['send'](f'RES:OK|DISPLAY:USAGE|DATA:{res}')
 
-    def get_procs(self,req,sort_method='memory'):
+    def get_procs(self,req):
 
         procs = []
+        sort_dict = {'RAM':'memory','CPU':'cpu'}
 
         try:
             limit = int(req['params'][1])
+            sort_method = sort_dict[req['params'][2]]
         except Exception:
             req['send']('RES:ERROR|MSG:Um erro ocorreu na coleta de parâmetros.')
             return
         
         for p in psutil.process_iter():
-            proc = p.as_dict(attrs=['pid','name','memory_percent','cpu_percent'])
-            if not None in proc.values():
-                procs.append(proc)
+            try:
+                proc = p.as_dict(attrs=['pid','name','memory_percent','cpu_percent'])
+                if not None in proc.values():
+                    procs.append(proc)
+            except Exception:
+                pass
 
         sorted_procs:list[dict] = sorted(procs, key=lambda p: p[f'{sort_method}_percent'], reverse=True)[:limit]
 
