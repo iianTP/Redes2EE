@@ -10,9 +10,9 @@ Projeto desenvolvido para a disciplina **Redes de Computadores 1** — UPE/POLI.
 
 ---
 
-## 📖 Sobre o projeto
+## Sobre o projeto
 
-O sistema permite que um computador (cliente) envie requisições a um servidor de monitoramento, que por sua vez pode se comunicar com uma ou mais máquinas monitoradas. O servidor é responsável por aguardar conexões, receber comandos, interpretar solicitações e retornar ao cliente as informações correspondentes. O cliente fornece a interface de comunicação para o usuário enviar comandos e visualizar as respostas.
+O sistema permite que um computador (cliente) envie requisições a um servidor de monitoramento, que pode se comunicar com uma ou mais máquinas monitoradas. O servidor é responsável por aguardar conexões, receber comandos, interpretar solicitações e retornar ao cliente as informações correspondentes. O cliente fornece a interface de comunicação para o usuário enviar comandos e visualizar as respostas.
 
 É possível:
 - Conectar e listar máquinas monitoradas;
@@ -23,7 +23,7 @@ O sistema permite que um computador (cliente) envie requisições a um servidor 
 
 ---
 
-## 🛠️ Tecnologias e bibliotecas
+## Tecnologias e bibliotecas
 
 - **Python**
 - **Sockets TCP** — comunicação cliente-servidor via `socket.AF_INET`, `socket.SOCK_STREAM`
@@ -35,12 +35,12 @@ O sistema permite que um computador (cliente) envie requisições a um servidor 
 
 ---
 
-## 🏗️ Arquitetura
+## Arquitetura
 
 O sistema é dividido em servidores, cliente, controllers e parsers.
 
 ### Controllers (lógica de processamento)
-| Arquivo | Responsabilidade |
+| Arquivo | Função |
 |---|---|
 | `display_controller.py` | Formata dados para exibição (tabelas, listas, barras de porcentagem, ajuda) |
 | `machine_controller.py` | Coleta dados de hardware/sistema (SO, versão, arquitetura, CPU, núcleos, RAM, armazenamento, processos) |
@@ -49,7 +49,7 @@ O sistema é dividido em servidores, cliente, controllers e parsers.
 ### Parsers (traduzem comandos em ações)
 `servidor → parser → controller → servidor`
 
-| Arquivo | Responsabilidade |
+| Arquivo | Função |
 |---|---|
 | `display_parser.py` | Associa comandos de exibição ao `display_controller.py` |
 | `machine_parser.py` | Associa comandos de máquina ao `machine_controller.py` |
@@ -60,12 +60,12 @@ O sistema é dividido em servidores, cliente, controllers e parsers.
 - **`monitor.py`** — servidor de monitoramento, herda de `server.py`, usa `monitor_parser.py`, porta padrão `2222`
 - **`machine.py`** — servidor da máquina monitorada, herda de `server.py`, usa `machine_parser.py`, porta `2223`
 - **`client.py`** — interface de comunicação com o usuário: envia comandos e exibe respostas
-- **`logs/`** — armazena o histórico de consumo (data, CPU, disco, RAM) de cada máquina
+- **`logs/`** — armazena o histórico de utilização (data, CPU, disco, RAM) de cada máquina
 - **`requirements.txt`** — dependências do projeto
 
 ---
 
-## 🔄 Fluxo geral do sistema
+## Fluxo geral do sistema
 
 1. O cliente (`client.py`) solicita o IP do servidor, cria um socket TCP e conecta-se ao servidor de monitoramento (porta `2222`).
 2. O servidor aguarda conexões e passa a receber comandos do cliente.
@@ -80,7 +80,7 @@ O sistema é dividido em servidores, cliente, controllers e parsers.
 
 ---
 
-## 📡 Protocolo
+## Protocolo
 
 **Requisição:**
 ```
@@ -112,14 +112,14 @@ RES:ERROR|MSG:(mensagem)
 
 ---
 
-## 💻 Comandos disponíveis
+## Comandos disponíveis
 
 ### Ajuda
 - `HELP` — lista todos os comandos disponíveis com descrições e parâmetros.
 
 ### Conexão / identificação
 - `LINK:(ip-1);(ip-2);...` — conecta/salva uma ou mais máquinas ao servidor de monitoramento.
-- `LIST` — lista os identificadores das máquinas conectadas.
+- `LIST` — lista os IDs das máquinas conectadas.
 - `RENAME:(id)` — renomeia o identificador de uma máquina.
 - `REMOVE:(id)` — remove a conexão de uma máquina.
 
@@ -131,7 +131,7 @@ RES:ERROR|MSG:(mensagem)
 
 ---
 
-## ▶️ Como executar
+## Como executar
 
 1. Instale as dependências:
    ```bash
@@ -149,4 +149,4 @@ RES:ERROR|MSG:(mensagem)
    ```bash
    python client.py
    ```
-5. Utilize os comandos listados na seção [Comandos disponíveis](#-comandos-disponíveis) para interagir com o sistema (ex.: `LINK:192.168.0.10`, `LIST`, `STATUS:MAQUINA1`).
+5. Utilize os comandos listados na seção [Comandos disponíveis] para interagir com o sistema (ex.: `LINK:192.168.0.10`, `LIST`, `STATUS:MAQUINA1`).
