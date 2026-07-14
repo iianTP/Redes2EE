@@ -28,13 +28,14 @@ class Client:
                 print('>>>',end='')
                 command = input()
 
-            if command == 'EXIT':
-                self.exit = True
-                continue
+            for com in command.split('|'):
+                if com == 'EXIT':
+                    self.exit = True
+                    continue
 
-            self.s.sendall(command.encode('utf-8'))
+                self.s.sendall(com.encode('utf-8'))
 
-            self.receive()
+                self.receive()
 
     def receive(self):
 
