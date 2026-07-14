@@ -71,6 +71,21 @@ class MonitorController:
         
         req['send'](f'RES:ERROR|MSG:MÁQUINA INFORMADA ({old_id}) NÃO EXISTE OU NOVO ID ({new_id}) JÁ ESTÁ SENDO USADO')
 
+    def remove_machine(self,req):
+        try:
+            id = req['params'][0]
+        except Exception as e:
+            print(e)
+            req['send']('RES:ERROR|MSG:ERRO NA COLETA DE PARÂMETROS')
+            return
+        
+        if id in self.machines:
+            self.machines.pop(id)
+            req['send']('RES:OK|DISPLAY:NONE|DATA:SUCESSO')
+            return
+        
+        req['send'](f'RES:ERROR|MSG:MÁQUINA INFORMADA ({id}) NÃO EXISTE')
+
     def get_machine_log(self,req):
         try:
             id = req['params'][0]

@@ -27,6 +27,11 @@ class MonitorParser(Parser):
                 'desc': ':(id-antigo)_(id-novo) -> Renomeia o ID da máquina informada'
             },
 
+            'REMOVE': {
+                'func': lambda req: self.mc.remove_machine(req),
+                'desc': ':(id) -> Exclui a conexão de uma máquina'
+            },
+
             'INFO': {
                 'func': lambda req: self.mc.machine_op(req,'M_INFO'),
                 'desc': ':(id) -> Fornece atributos principais de uma máquina (parâmetros: ID da máquina)'

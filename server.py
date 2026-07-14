@@ -1,16 +1,6 @@
 import socket
 from parsers.parser import Parser
 
-'''
-FORMATO DE REQUEST:
-(COMANDO):(PARAMETRO);(PARAMETRO);(PARAMETRO);...
-
-FORMATO DE RESPONSE:
-(COMANDO):(LABEL)_(DADO);(LABEL)_(DADO);(LABEL)_(DADO);...
-
-MÚLTIPLOS COMANDOS/CAMPOS -> SEPARAR COM |
-'''
-
 class Server:
     def __init__(self):
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
