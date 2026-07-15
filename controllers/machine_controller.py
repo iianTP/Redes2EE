@@ -21,7 +21,7 @@ class MachineController:
                 res.append(f'{label}_{data:.2f}')
             else:
                 res.append(f'{label}_{data}')
-        req['send'](f'RES:OK|DISPLAY:LIST|DATA:{';'.join(res)}')
+        req['send'](f"RES:OK|DISPLAY:LIST|DATA:{';'.join(res)}")
 
     def get_status(self,req):
         mem_usage = psutil.virtual_memory().percent
@@ -58,10 +58,10 @@ class MachineController:
         for p in sorted_procs:
 
             attr_list = [
-                f'{p['pid']}',
+                f"{p['pid']}",
                 p['name'],
-                f'{p['memory_percent']:.2f}',
-                f'{p['cpu_percent']:.2f}'
+                f"{p['memory_percent']:.2f}",
+                f"{p['cpu_percent']:.2f}"
             ]
 
             proc_str_list.append('_'.join(attr_list))

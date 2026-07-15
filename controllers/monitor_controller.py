@@ -9,8 +9,10 @@ class MonitorController:
         self.t.start()
 
     def _get_machine_ip(self,params,com):
-        id = params[0]
-        return self.machines[id]
+        if not params:
+            return None
+        machine_id = params[0]
+        return self.machines.get(machine_id)
     
     def _logger_thread(self):
         while True:
@@ -71,21 +73,6 @@ class MonitorController:
         
         req['send'](f'RES:ERROR|MSG:MÁQUINA INFORMADA ({old_id}) NÃO EXISTE OU NOVO ID ({new_id}) JÁ ESTÁ SENDO USADO')
 
-    def remove_machine(self,req):
-        try:
-            id = req['params'][0]
-        except Exception as e:
-            print(e)
-            req['send']('RES:ERROR|MSG:ERRO NA COLETA DE PARÂMETROS')
-            return
-        
-        if id in self.machines:
-            self.machines.pop(id)
-            req['send']('RES:OK|DISPLAY:NONE|DATA:SUCESSO')
-            return
-        
-        req['send'](f'RES:ERROR|MSG:MÁQUINA INFORMADA ({id}) NÃO EXISTE')
-
     def get_machine_log(self,req):
         try:
             id = req['params'][0]
@@ -106,33 +93,38 @@ class MonitorController:
 
         
     def machine_op(self,req,com:str):
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as conn:
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as conn:
+                ip = self._get_machine_ip(req['params'],com)
+                if not ip:
+                    req['send']('RES:ERROR|MSG:ID DA MÁQUINA NÃO ENCONTRADO OU NÃO CONECTADO')
+                    return
 
-            ip = self._get_machine_ip(req['params'],com)
-            if not ip: 
-                req['send']('RES:ERROR|MSG:Ocorreu um erro no reconhecimento do IP da máquina')
-                return
-            
-            if req['params']:
-                params = ';'.join(req['params'])
-                com += f':{params}'
-            
-            conn.connect((ip,2223))
-            conn.sendall(com.encode('utf-8'))
-            res = conn.recv(2048).decode('utf-8')
-            print(res)
+                if req['params']:
+                    params = ';'.join(req['params'])
+                    com += f':{params}'
 
-            try:
-                conn.shutdown(socket.SHUT_WR)
-            except Exception:
-                pass
+                conn.connect((ip,2223))
+                conn.sendall(com.encode('utf-8'))
+                res = conn.recv(2048).decode('utf-8', errors='ignore')
+                print(res)
 
-            fields = res.split('|')
-            res_dict = { label: data for f in fields for [label,data] in [f.split(':',1)]}
+                try:
+                    conn.shutdown(socket.SHUT_WR)
+                except Exception:
+                    pass
 
+                fields = res.split('|')
+                res_dict = {}
+                for field in fields:
+                    if ':' not in field:
+                        continue
+                    label, data = field.split(':', 1)
+                    res_dict[label] = data
 
-
-            if 'RES' in res_dict and res_dict['RES'] == 'OK':
-                req['send'](f'RES:OK|DISPLAY:{res_dict['DISPLAY']}|DATA:{res_dict['DATA']}')
-            else:
-                req['send'](res)
+                if 'RES' in res_dict and res_dict['RES'] == 'OK':
+                    req['send'](f"RES:OK|DISPLAY:{res_dict['DISPLAY']}|DATA:{res_dict['DATA']}")
+                else:
+                    req['send']('RES:ERROR|MSG:RESPOSTA INVÁLIDA DA MÁQUINA')
+        except (ConnectionRefusedError, TimeoutError, OSError) as exc:
+            req['send']('RES:ERROR|MSG:Não foi possível contactar a máquina monitorada.')

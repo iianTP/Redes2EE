@@ -58,7 +58,7 @@ class MonitorParser(Parser):
         res = []
         count = 1 
         for com, info in self.commands.items():
-            res.append(f'{count}_{com}{info['desc']}\n')
+            res.append(f"{count}_{com}{info['desc']}\n")
             count += 1
 
-        req['send'](f'RES:OK|DISPLAY:HELP|DATA:{';'.join(res)}')
+        req['send'](f"RES:OK|DISPLAY:HELP|DATA:{';'.join(res)}")
